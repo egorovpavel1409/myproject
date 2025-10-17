@@ -7,19 +7,24 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/egorovpavel1409/myproject.git'
-            }
-        }
-
         stage('Build with Maven') {
+            agent {
+                docker {
+                    image 'maven:3.9.9-eclipse-temurin-17'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
             steps {
                 sh 'mvn clean package -DskipTests'
             }
         }
 
         stage('Run Tests') {
+            agent {
+                docker {
+                    image 'maven:3.9.9-eclipse-temurin-17'
+                }
+            }
             steps {
                 sh 'mvn test'
             }
